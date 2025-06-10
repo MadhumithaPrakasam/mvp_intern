@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import InventoryCount from "../components/InventoryCount";
-import UsageLogger from "../components/UsageLogger";
+import InventoryCount from "../component/InventoryCount";
+import UsageLogger from "../component/UsageLogger";
 
 export default function RoleSelection() {
   const [visible, setVisible] = useState({
@@ -119,7 +119,32 @@ export default function RoleSelection() {
         </div>
       </div>
 
-      <style jsx>{/* same CSS as before */}</style>
+      <style jsx>{`
+  .btn {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: teal;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  .btn:hover {
+    background-color: #006d6d;
+  }
+  .card {
+    background: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+  }
+`}</style>
+
     </>
   );
 }
