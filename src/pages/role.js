@@ -3,6 +3,8 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import InventoryCount from "@/component/InventoryCount";
 import UsageLogger from "@/component/UsageLogger";
+import { db } from "@/lib/firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 export default function RoleSelection() {
   const [visible, setVisible] = useState({
@@ -102,23 +104,19 @@ export default function RoleSelection() {
 
           {/* Doctor View */}
           {visible.doctorView && (
-  <div className="bg-white rounded-lg shadow p-6 w-full max-w-xl">
-    <h2 className="text-lg font-semibold mb-2">Doctor Dashboard</h2>
-
-    {/* Inventory counters */}
-    <InventoryCount medicineName="Paracetamol" />
-    <InventoryCount medicineName="Amoxicillin" />
-    <InventoryCount medicineName="Cough Syrup" />
-
-    <h3 className="mt-4 font-semibold">🔧 Equipment Availability</h3>
-    <ul className="list-disc pl-5">
-      <li>Thermometers - 25</li>
-      <li>BP Machines - 10</li>
-      <li>Stethoscopes - 40</li>
-    </ul>
-  </div>
-)}
-
+            <div className="bg-white rounded-lg shadow p-6 w-full max-w-xl">
+              <h2 className="text-lg font-semibold mb-2">Doctor Dashboard</h2>
+              <InventoryCount medicineName="Paracetamol" />
+              <InventoryCount medicineName="Amoxicillin" />
+              <InventoryCount medicineName="Cough Syrup" />
+              <h3 className="mt-4 font-semibold">🔧 Equipment Availability</h3>
+              <ul className="list-disc pl-5">
+                <li>Thermometers - 25</li>
+                <li>BP Machines - 10</li>
+                <li>Stethoscopes - 40</li>
+              </ul>
+            </div>
+          )}
 
           {/* Staff Options */}
           {visible.staffOptions && (
@@ -156,11 +154,30 @@ export default function RoleSelection() {
           {/* Usage Logger */}
           {visible.usageForm && <UsageLogger />}
 
-          {/* Medicine Form */}
+          {/* Medicine Form with Firestore */}
           {visible.medicineForm && (
             <div className="bg-white rounded-lg shadow p-6 w-full max-w-xl">
               <h3 className="font-semibold mb-2">Add New Medicine</h3>
-              <form>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const name = e.target[0].value;
+                const batch = e.target[1].value;
+                const expiry = e.target[2].value;
+                const quantity = parseInt(e.target[3].value);
+                try {
+                  await addDoc(collection(db, "medicines"), {
+                    name,
+                    batch,
+                    expiry,
+                    quantity,
+                    createdAt: new Date()
+                  });
+                  alert("Medicine added successfully!");
+                  e.target.reset();
+                } catch (error) {
+                  alert("Error adding medicine: " + error.message);
+                }
+              }}>
                 <input type="text" placeholder="Medicine Name" required className="input" />
                 <input type="text" placeholder="Batch Number" required className="input" />
                 <input type="date" required className="input" />
